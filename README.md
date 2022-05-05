@@ -1,3 +1,3 @@
 # OtterSimulator
 
-D
+Differential drive vehicle
