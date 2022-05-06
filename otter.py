@@ -74,7 +74,7 @@ class Otter:
         self.tauX = tau_X  # surge force (N)
 
         # Initialize the Otter USV model
-        self.T_n = 1.0  # propeller time constants (s)
+        self.T_n = 0.32  # propeller time constants (s)
         self.L = 2.0    # Length (m)
         self.B = 1.08   # beam (m)
         self.nu = np.array([0, 0, 0, 0, 0, 0], float)  # velocity vector
@@ -366,19 +366,16 @@ class Otter:
         return u_control
 
 
-    def stepInput(self, t):
+    def stepInput(self, iteration, length):
         """
         u = stepInput(t) generates propeller step inputs.
         """
-        n1 = 100  # rad/s
-        n2 = 80
+        n1 = 90.0  # rad/s
+        n2 = 60.0
 
-        if t > 30 and t < 100:
-            n1 = 80
-            n2 = 120
-        else:
-            n1 = 0
-            n2 = 0
+        if iteration > int(length/2):
+            n1 = 60
+            n2 = 90
 
         u_control = np.array([n1, n2], float)
 
