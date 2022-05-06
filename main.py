@@ -15,7 +15,6 @@ stopTime = 10  # stop time
 
 
 if __name__ == "__main__":
-    print("Hello World!")
 
     vehicle = Otter()
 
@@ -61,7 +60,6 @@ if __name__ == "__main__":
         u_actual_list.append(vehicle.u_actual)
 
 
-
     # create a figure
     plt.figure(1)
     plt.plot(t[:-1], u_control_list)
@@ -71,7 +69,6 @@ if __name__ == "__main__":
     plt.xlabel("Time (s)")
     plt.ylabel("Control Signal (rad/s)")
     plt.grid()
-
 
     plt.figure(2)
     plt.plot(t[:-1], eta_list[:][0])   # X position
