@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 otter.py: 
@@ -44,7 +44,7 @@ from control import PIDpolePlacement
 from gnc import Smtrx, Hmtrx, m2c, crossFlowDrag, sat
 
 # Class Vehicle
-class otter:
+class Otter:
     """
     otter()                          Step inputs for n1 and n2
     otter('headingAutopilot',psi_d)  Heading autopilot, desired yaw angle (deg)
@@ -385,26 +385,4 @@ class otter:
         return u_control
 
 
-
-
-vehicle = otter()
-
-tt = np.linspace(0.0, 10.0, 100)
-u = vehicle.stepInput(t=10)
-
-
-print(vehicle.nu)
-
-
-
-[nu,u_actual] = vehicle.dynamics(
-                        eta=np.array([0, 0, 0, 0, 0, 0], float),    # position/attitude, user editable
-                        nu=vehicle.nu,
-                        u_actual=vehicle.u_actual,
-                        u_control=vehicle.stepInput(0.1),
-                        sampleTime=0.1)
-
-
-print(nu)
-print(u_actual)
 
