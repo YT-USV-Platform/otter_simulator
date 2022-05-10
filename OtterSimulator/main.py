@@ -3,6 +3,7 @@
 from otter import Otter
 import numpy as np
 import matplotlib.pyplot as plt
+from OtterSimulator.gnc import attitudeEuler
 
 
 legendSize = 10  # legend size
@@ -11,7 +12,7 @@ figSize2 = [25, 13]  # figure2 size in cm
 dpiValue = 150  # figure dpi value
 
 sampleTime = 0.01  # sample time
-stopTime = 10  # stop time
+stopTime = 60.0  # stop time
 
 
 if __name__ == "__main__":
@@ -20,7 +21,7 @@ if __name__ == "__main__":
 
     # u = vehicle.stepInput(t=10)
 
-    t = np.linspace(0.0, stopTime, stopTime*1/sampleTime)
+    t = np.linspace(0.0, stopTime, int(stopTime*1/sampleTime))
 
     vehicle.nu = np.array([0, 0, 0, 0, 0, 0], float)
     vehicle.u_actual = np.array([0, 0], float)
@@ -29,6 +30,7 @@ if __name__ == "__main__":
     current_eta = np.array([0, 0, 0, 0, 0, 0], float)
 
     eta_list = np.zeros((6, len(t)-1), float)
+    nu_list = np.zeros((6, len(t)-1), float) 
     u_control_list = []
     u_actual_list = []
     for i in range(len(t)-1):
@@ -51,14 +53,16 @@ if __name__ == "__main__":
         vehicle.nu = nu
         vehicle.u_actual = u_actual
 
-        current_eta = current_eta + nu*(t[i+1]-t[i])
+        current_eta = attitudeEuler(current_eta, vehicle.nu, sampleTime)
+        # current_eta = current_eta + nu*(t[i+1]-t[i])
 
         eta_list[:,i] = np.transpose(current_eta)
+        nu_list[:,i] = np.transpose(vehicle.nu)
+
         print("Current eta: ", current_eta)
 
         u_control_list.append(vehicle.u_control)
         u_actual_list.append(vehicle.u_actual)
-
 
     # create a figure
     plt.figure(1)
@@ -84,6 +88,21 @@ if __name__ == "__main__":
     plt.xlabel("Time (s)")
     plt.ylabel("Yaw Angle (rad)")
     plt.grid()
+
+    plt.figure(4)
+    plt.plot(t[:-1], nu_list[:][0])   # X velocity
+    plt.legend(["X Velocity of Vehicle"], fontsize=legendSize)
+    plt.xlabel("Time (s)")
+    plt.ylabel("X Velocity (rad)")
+    plt.grid()
+
+    plt.figure(5)
+    plt.plot(t[:-1], nu_list[:][1])   # X velocity
+    plt.legend(["Y Velocity of Vehicle"], fontsize=legendSize)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Y Velocity (rad)")
+    plt.grid()
+
 
     plt.show()
 

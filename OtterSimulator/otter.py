@@ -41,7 +41,7 @@ Author:     Thor I. Fossen
 import numpy as np
 import math
 from OtterSimulator.control import PIDpolePlacement
-from OtterSimulator.gnc import Smtrx, Hmtrx, m2c, crossFlowDrag, sat
+from OtterSimulator.gnc import Smtrx, Hmtrx, m2c, crossFlowDrag, sat, attitudeEuler
 
 # Class Vehicle
 class Otter:
@@ -221,7 +221,7 @@ class Otter:
 
         # Input vector
         n = np.array([u_actual[0], u_actual[1]])
-
+        print('n:',n)
         # Current velocities
         u_c = self.V_c * math.cos(self.beta_c - eta[5])  # current surge vel.
         v_c = self.V_c * math.sin(self.beta_c - eta[5])  # current sway vel.
@@ -296,6 +296,41 @@ class Otter:
         u_actual = np.array(n, float)
 
         return nu, u_actual
+
+    
+    def initialize_otter(self, sample_time):
+        self.sample_time=sample_time
+        self.nu = np.array([0, 0, 0, 0, 0, 0], float)
+        self.u_actual = np.array([0, 0], float)
+        self.u_control = np.array([0, 0], float)
+        self.current_eta = np.array([0, 0, 0, 0, 0, 0], float)
+
+        return
+    
+    
+    def update_motors(self,control_signal):
+
+        print("Control Signal : Left:{0}   Right:{1}".format(control_signal[0], control_signal[1]))
+
+        [nu,u_actual] = self.dynamics(
+                                eta=self.current_eta,    # position/attitude, user editable
+                                nu=self.nu,
+                                u_actual=self.u_actual,
+                                u_control=control_signal,
+                                sampleTime=self.sample_time)
+
+        self.nu = nu
+        self.u_actual = u_actual
+
+        self.current_eta = attitudeEuler(self.current_eta, self.nu, self.sample_time)
+        
+        ##### TODO get mode of angles
+        
+        print("Current Nu : {0}".format(self.nu))
+        print("Current Eta : {0}".format(self.current_eta))
+
+        
+        return self.nu, self.current_eta
 
 
     # def controlAllocation(self, tau_X, tau_N):
@@ -374,8 +409,8 @@ class Otter:
         n2 = 60.0
 
         if iteration > int(length/2):
-            n1 = 60
-            n2 = 90
+            n1 = 90
+            n2 = 60
 
         u_control = np.array([n1, n2], float)
 
